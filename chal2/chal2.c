@@ -129,24 +129,14 @@ void *handler(void *pSock){
     int2 = atoi(rBuf);
 
     pthread_mutex_lock(&tmutex);
-    if (!int2){
-        strncpy(sBuf, "No dividing by zero!!!\n", BUFSIZE);
-        if (send(*rsock, sBuf, strlen(sBuf), 0) == -1){
-            perror("send");
-            close(*rsock);
-            pthread_mutex_unlock(&tmutex);
-            pthread_exit(NULL);
-        }
-    } else {
-        gsock = *rsock;
-        int ans = int1 / int2;
-        sprintf(sBuf, "%d divided by %d equals: %d\n", int1, int2, ans);
-        if (send(*rsock, sBuf, strlen(sBuf), 0) == -1){
-            perror("send");
-            close(*rsock);
-            pthread_mutex_unlock(&tmutex);
-            pthread_exit(NULL);
-        }
+    gsock = *rsock;
+    int ans = int1 / int2;
+    sprintf(sBuf, "%d divided by %d equals: %d\n", int1, int2, ans);
+    if (send(*rsock, sBuf, strlen(sBuf), 0) == -1){
+        perror("send");
+        close(*rsock);
+        pthread_mutex_unlock(&tmutex);
+        pthread_exit(NULL);
     }
 
     pthread_mutex_unlock(&tmutex);
