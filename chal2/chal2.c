@@ -71,6 +71,7 @@ void sig_handler(){
     char sBuf[BUFSIZE];
     char fBuf[15];
     fgets(fBuf, 15, fp);
+    fclose(fp);
     sprintf(sBuf, "You've won Charlie!\n%s", fBuf);
     if (send(gsock, sBuf, strlen(sBuf), 0) == -1){
         perror("send");
@@ -78,7 +79,6 @@ void sig_handler(){
         pthread_mutex_unlock(&tmutex);
         pthread_exit(NULL);
     }
-    fclose(fp);
     close(gsock);
     pthread_mutex_unlock(&tmutex);
     pthread_exit(NULL);
@@ -92,6 +92,7 @@ void *handler(void *pSock){
     memset(rBuf, '\0', BUFSIZE);
     memset(sBuf, '\0', BUFSIZE);
     signal(SIGFPE, sig_handler);
+    signal(SIGPIPE, SIG_IGN);
 
     pthread_mutex_lock(&tmutex);
     strncpy(sBuf, "Enter a number: ", BUFSIZE);
@@ -106,7 +107,6 @@ void *handler(void *pSock){
     if (recv(*rsock, rBuf, BUFSIZE, 0) == -1){
         perror("recv");
         close(*rsock);
-        pthread_mutex_unlock(&tmutex);
         pthread_exit(NULL);
     }
     int1 = atoi(rBuf);
@@ -124,7 +124,6 @@ void *handler(void *pSock){
     if (recv(*rsock, rBuf, BUFSIZE, 0) == -1){
         perror("recv");
         close(*rsock);
-        pthread_mutex_unlock(&tmutex);
         pthread_exit(NULL);
     }
     int2 = atoi(rBuf);
