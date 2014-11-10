@@ -1,3 +1,5 @@
 Challenge 1
 ===========
-An old CS project. Just run strings on it and do bit of searching to get the flag.
+An old CS project. Just run strings on it and do bit of searching to get the flag.<br>
+OR<br>
+strings chal2 | grep RC3
