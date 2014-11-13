@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99
+CFLAGS=-std=c99 -static
 CLIBFLAGS=-lpthread
 CSOURCE=chal2.c
 
