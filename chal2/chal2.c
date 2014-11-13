@@ -1,91 +1,32 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <pthread.h>
-#include <time.h>
+#ifndef CTF_THREADS
+#define CTF_THREADS
+#endif
+#include "ctfserver.h"
 #include <signal.h>
 
-typedef int sock;
-typedef struct sockaddr_in sockaddr_in;
-typedef struct sockaddr sockaddr;
+void handler(void * pSock);
 
-#define BUFSIZE 1028
-#define PORT 12345
-#define MAX_CONNECTIONS 30
-
-void *handler(void * pSock);
-
-pthread_mutex_t tmutex;
 sock gsock;
 
 int main()
 {
-    sock rsock, lsock;
-    sockaddr_in lsin, rsin;
-    pthread_t pid;
-    memset(&lsin, 0, sizeof(sockaddr_in));
-    memset(&rsin, 0, sizeof(sockaddr_in));
-
-    lsin.sin_family = AF_INET;
-    lsin.sin_port = htons(PORT);
-    lsin.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    if ((lsock = socket(AF_INET, SOCK_STREAM, 0)) == -1){
-        perror("socket");
-        return 1;
-    }
-    if (bind(lsock, (sockaddr *)&lsin, sizeof(lsin)) == -1){
-        perror("bind");
-        return 1;
-    }
-    if (listen(lsock, MAX_CONNECTIONS) == -1){
-        perror("listen");
-        return 1;
-    }
-
-    socklen_t rsin_len = sizeof(rsin);
-    if ( pthread_mutex_init(&tmutex, NULL) != 0 ){
-        perror("mutex init failed");
-        close(lsock);
-        return 1;
-    }
-
-    while (1){
-        rsock = accept(lsock, (sockaddr *)&rsin, &rsin_len);
-        pthread_mutex_lock(&tmutex);
-        pthread_create(&pid, NULL, handler, (void *)&rsock);
-        pthread_mutex_unlock(&tmutex);
-    }
-
+    if (!ctfserver(handler)) return 1;
     return 0;
 }
 
 void sig_handler(){
-    FILE *fp = fopen("flag.txt", "r");
-    char sBuf[BUFSIZE];
-    char fBuf[15];
-    fgets(fBuf, 15, fp);
-    fclose(fp);
-    sprintf(sBuf, "You've won Charlie!\n%s", fBuf);
-    if (send(gsock, sBuf, strlen(sBuf), 0) == -1){
-        perror("send");
-        close(gsock);
-        pthread_mutex_unlock(&tmutex);
-        pthread_exit(NULL);
-    }
-    close(gsock);
     pthread_mutex_unlock(&tmutex);
+    send_flag(gsock, "You've won Charlie!\n");
+    close(gsock);
     pthread_exit(NULL);
 }
 
-void *handler(void *pSock){
-    sock *rsock = (sock *)pSock;
+void seg_handler(){
+    pthread_exit(NULL);
+}
+
+void handler(void *pSock){
+    sock rsock = *((sock *)pSock);
     int int1, int2;
     char sBuf[BUFSIZE];
     char rBuf[BUFSIZE];
@@ -93,54 +34,27 @@ void *handler(void *pSock){
     memset(sBuf, '\0', BUFSIZE);
     signal(SIGFPE, sig_handler);
     signal(SIGPIPE, SIG_IGN);
+    signal(SIGSEGV, seg_handler);
 
-    pthread_mutex_lock(&tmutex);
-    strncpy(sBuf, "Enter a number: ", BUFSIZE);
-    if (send(*rsock, sBuf, strlen(sBuf), 0) == -1){
-        perror("send");
-        close(*rsock);
-        pthread_mutex_unlock(&tmutex);
-        pthread_exit(NULL);
-    }
-    pthread_mutex_unlock(&tmutex);
+    if (!rprintf(rsock, "Enter a number: ")) pthread_exit(NULL);
 
-    if (recv(*rsock, rBuf, BUFSIZE, 0) == -1){
-        perror("recv");
-        close(*rsock);
-        pthread_exit(NULL);
-    }
+    if (!rgets(rsock, rBuf)) pthread_exit(NULL);
     int1 = atoi(rBuf);
 
-    pthread_mutex_lock(&tmutex);
-    strncpy(sBuf, "Enter another number: ", BUFSIZE);
-    if (send(*rsock, sBuf, strlen(sBuf), 0) == -1){
-        perror("send");
-        close(*rsock);
-        pthread_mutex_unlock(&tmutex);
-        pthread_exit(NULL);
-    }
-    pthread_mutex_unlock(&tmutex);
+    if (!rprintf(rsock, "Enter another number: ")) pthread_exit(NULL);
+    int1 = atoi(rBuf);
 
-    if (recv(*rsock, rBuf, BUFSIZE, 0) == -1){
-        perror("recv");
-        close(*rsock);
-        pthread_exit(NULL);
-    }
+    if (!rgets(rsock, rBuf)) pthread_exit(NULL);
+
     int2 = atoi(rBuf);
 
     pthread_mutex_lock(&tmutex);
-    gsock = *rsock;
+    gsock = rsock;
     int ans = int1 / int2;
-    sprintf(sBuf, "%d divided by %d equals: %d\n", int1, int2, ans);
-    if (send(*rsock, sBuf, strlen(sBuf), 0) == -1){
-        perror("send");
-        close(*rsock);
-        pthread_mutex_unlock(&tmutex);
-        pthread_exit(NULL);
-    }
-
     pthread_mutex_unlock(&tmutex);
-    close(*rsock);
+    if (!rprintf(rsock, "%d divided by %d equals: %d\n", int1, int2, ans))
+        pthread_exit(NULL);
+
+    close(rsock);
     pthread_exit(NULL);
 }
-
