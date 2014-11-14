@@ -1,13 +1,69 @@
-#include <unistd.h>
-#include <sys/types.h>
+#ifndef CTF_THREADS
+#define CTF_THREADS
+#endif
 #include <sys/ptrace.h>
-#include <sys/wait.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <signal.h>
+#include <string.h>
+#include "ctfserver.h"
 
 extern char __executable_start;
 extern char __etext;
+
+void handler(void *pSock);
+void anti_debug();
+
+int main()
+{
+    anti_debug();
+    if (!ctfserver(handler)) return 1;
+    sleep(3);
+    printf("done!\n");
+}
+
+void handler(void *pSock){
+    char yolo[5];
+    yolo[0] = 'y';
+    sock rsock = *((sock *)pSock);
+    yolo[1] = 'o';
+    char rBuf[BUFSIZE];
+    anti_debug();
+    yolo[2] = 'l';
+    if (!rprintf(rsock, "Don't debug me, bro.\n")) pthread_exit(NULL);
+    yolo[3] = 'o';
+    sleep(2);
+    if (!rprintf(rsock, "Well, since you're here... Whats my motto? ")) pthread_exit(NULL);
+    if (!rgets(rsock, rBuf)) pthread_exit(NULL);
+    yolo[4] = '\0';
+    char *out = strtok(rBuf, "\n");
+    if (out == NULL) pthread_exit(NULL);
+
+    pthread_mutex_lock(&tmutex);
+    char fBuf[5];
+    FILE *fp = fopen("key.txt", "r");
+    if (!fp){
+        puts("key.txt missing\n");
+        if (!rprintf(rsock, "Something broke, contact an RC3 eboard member\n")){
+                pthread_mutex_unlock(&tmutex);
+                pthread_exit(NULL);
+        }
+    }else{
+        fgets(fBuf, 5, fp);
+        fclose(fp);
+        pthread_mutex_unlock(&tmutex);
+        if (strstr(fBuf, yolo)){
+            if (!send_flag(rsock, "Nice... ")){
+                pthread_mutex_unlock(&tmutex);
+                pthread_exit(NULL);
+            }
+        }else{
+            if (!rprintf(rsock, "Pffftt... NO. I don't live that.\n")){
+                pthread_mutex_unlock(&tmutex);
+                pthread_exit(NULL);
+            }
+        }
+    }
+    close(rsock);
+}
 
 void anti_debug()
 {
@@ -40,11 +96,4 @@ void anti_debug()
                 raise(SIGSEGV);
         }
     }
-}
-
-int main()
-{
-    anti_debug();
-    sleep(3);
-    printf("done!\n");
 }
