@@ -11,10 +11,12 @@
 #include <arpa/inet.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <signal.h>
 
 typedef int sock;
 typedef struct sockaddr_in sockaddr_in;
 typedef struct sockaddr sockaddr;
+sock glsock;
 
 #ifdef CTF_SPEC
 #include "ctfspec.h"
@@ -33,6 +35,7 @@ pthread_mutex_t tmutex;
 #define MAX_CONNECTIONS 30
 #endif
 
+void sigint();
 bool ctfserver(void (*handler)(void *));
 bool rprintf(sock rsock, char *fmt, ...);
 bool rgets(sock rsock, char *rBuf);

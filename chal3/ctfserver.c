@@ -1,6 +1,11 @@
 #include "ctfserver.h"
 
+void sigint(){
+    close(glsock);
+}
+
 bool ctfserver(void (*handler)(void *)) {
+    signal(SIGINT, sigint);
     sock rsock, lsock;
     sockaddr_in lsin, rsin;
     memset(&lsin, 0, sizeof(sockaddr_in));
@@ -33,6 +38,7 @@ bool ctfserver(void (*handler)(void *)) {
     }
 #endif
 
+    glsock = lsock;
     while (1){
         if ((rsock = accept(lsock, (sockaddr *)&rsin, &rsin_len)) != -1){
 #ifdef CTF_THREADS
