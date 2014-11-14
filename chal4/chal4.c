@@ -5,6 +5,7 @@
 #include <signal.h>
 #include <string.h>
 #include "ctfserver.h"
+#define BREAKS 4
 
 extern char __executable_start;
 extern char __etext;
@@ -90,10 +91,14 @@ void anti_debug()
     size_t size = (unsigned long)&__etext - (unsigned long)&__executable_start;
 
     //Scan through memory (.text) to find breakpoints :)
+    int count = 0;
     for (size_t i = 0; i != size; i++){
         if (ch[i] == bp1 || ch[i] == bp2){
+            count++;
+            if (count > BREAKS){
                 printf("Breakpoint detected. @0x%lx: 0x%x\nAborting.\n", (unsigned long)&ch[i], ch[i]);
                 raise(SIGSEGV);
+            }
         }
     }
 }
