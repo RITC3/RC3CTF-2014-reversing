@@ -34,8 +34,8 @@ void handler(void * pSock){
             send_flag(rsock, "You win! Here is your flag: ");
             return;
         } else
-            if (!rprintf(rsock, "No.\n")) return;
+            if (!rprintf(rsock, "No. i = %p; q = %p\n", i, q)) return;
     }else
-        if (!rprintf(rsock, "No.\n")) return;
+        if (!rprintf(rsock, "No. i = 0x%x; q = 0x%x\n", i, q)) return;
     close(rsock);
 }
