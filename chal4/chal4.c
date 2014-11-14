@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <string.h>
 #include "ctfserver.h"
-#define BREAKS 4
+#define BREAKS 5
 
 extern char __executable_start;
 extern char __etext;
@@ -38,29 +38,15 @@ void handler(void *pSock){
     char *out = strtok(rBuf, "\n");
     if (out == NULL) pthread_exit(NULL);
 
-    pthread_mutex_lock(&tmutex);
-    char fBuf[5];
-    FILE *fp = fopen("key.txt", "r");
-    if (!fp){
-        puts("key.txt missing\n");
-        if (!rprintf(rsock, "Something broke, contact an RC3 eboard member\n")){
-                pthread_mutex_unlock(&tmutex);
-                pthread_exit(NULL);
+    if (strstr(rBuf, yolo) != NULL){
+        if (!send_flag(rsock, "Nice... ")){
+            close(rsock);
+            pthread_exit(NULL);
         }
     }else{
-        fgets(fBuf, 5, fp);
-        fclose(fp);
-        pthread_mutex_unlock(&tmutex);
-        if (strstr(fBuf, yolo)){
-            if (!send_flag(rsock, "Nice... ")){
-                pthread_mutex_unlock(&tmutex);
-                pthread_exit(NULL);
-            }
-        }else{
-            if (!rprintf(rsock, "Pffftt... NO. I don't live that.\n")){
-                pthread_mutex_unlock(&tmutex);
-                pthread_exit(NULL);
-            }
+        if (!rprintf(rsock, "Pffftt... NO. I don't live that.\n")){
+            close(rsock);
+            pthread_exit(NULL);
         }
     }
     close(rsock);
