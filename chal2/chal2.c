@@ -36,15 +36,15 @@ void handler(void *pSock){
     signal(SIGPIPE, SIG_IGN);
     signal(SIGSEGV, seg_handler);
 
-    if (!rprintf(rsock, "Enter a number: ")) pthread_exit(NULL);
+    if (!rprintf(rsock, "Enter a number: ")) goto Cleanup;
 
-    if (!rgets(rsock, rBuf)) pthread_exit(NULL);
+    if (!rgets(rsock, rBuf)) goto Cleanup;
     int1 = atoi(rBuf);
 
-    if (!rprintf(rsock, "Enter another number: ")) pthread_exit(NULL);
+    if (!rprintf(rsock, "Enter another number: ")) goto Cleanup;
     int1 = atoi(rBuf);
 
-    if (!rgets(rsock, rBuf)) pthread_exit(NULL);
+    if (!rgets(rsock, rBuf)) goto Cleanup;
 
     int2 = atoi(rBuf);
 
@@ -52,9 +52,9 @@ void handler(void *pSock){
     gsock = rsock;
     int ans = int1 / int2;
     pthread_mutex_unlock(&tmutex);
-    if (!rprintf(rsock, "%d divided by %d equals: %d\n", int1, int2, ans))
-        pthread_exit(NULL);
+    if (!rprintf(rsock, "%d divided by %d equals: %d\n", int1, int2, ans)) goto Cleanup;
 
+Cleanup:
     close(rsock);
     pthread_exit(NULL);
 }
