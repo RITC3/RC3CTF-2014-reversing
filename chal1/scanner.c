@@ -49,7 +49,7 @@ Node ** get_matrix(FILE *fp, int states, int accept){
             return NULL;
         }
     }
-    char * one = "RC3-TEST-9999";
+    char *flag = "RC3-EASY-0101";
 
 
     /* Fill all array spots with the error state and false for storing.
