@@ -2,6 +2,8 @@ Challenge 3 - 400 Points
 ========================
 Simple buffer overflow to overwite values on the stack.
 
+Must compile with -fno-stack-protector
+
 Hints
 -----
 1. Strcpy is involved. It's awful.
