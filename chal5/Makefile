@@ -2,7 +2,7 @@ CSOURCE=chal5.c
 CFLAGS=-std=c99
 CC=gcc
 
-all: chal5
+all: static
 
 chal5: clean
 	$(CC) $(CFLAGS) -o chal5 $(CSOURCE)
