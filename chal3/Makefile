@@ -3,7 +3,7 @@ CFLAGS=-std=c99 -DCTF_SPEC
 CLIBFLAGS=
 CSOURCE=chal3.c ctfserver.c
 
-all: chal3
+all: static
 
 chal3: clean
 	$(CC) $(CFLAGS) -o chal3 $(CSOURCE) $(CLIBFLAGS)
