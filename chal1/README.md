@@ -4,7 +4,7 @@ An old CS project.
 
 Hint
 ----
-Filter output
+1. Filter output
 
 Solution
 --------
