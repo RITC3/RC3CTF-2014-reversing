@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -DCTF_SPEC
+CFLAGS=-std=c99 -DCTF_SPEC -fno-stack-protector
 CLIBFLAGS=
 CSOURCE=chal3.c ctfserver.c
 
