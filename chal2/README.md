@@ -1,5 +1,5 @@
-Challenge 2
-===========
+Challenge 2 - 200 Points
+========================
 Relies on the SIGFPE handler. Nearly identical to the stackoverflow challenge. Still fun though.
 
 **Must be run on a 32-bit system!**

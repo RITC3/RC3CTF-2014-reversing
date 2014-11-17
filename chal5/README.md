@@ -1,5 +1,5 @@
-Challenge 5
-===========
+Challenge 5 - 300 Points
+========================
 Harder than strings for sure. Misleading function that you can get called RC3_NOTA_FLAG by just disassembling.
 
 The real one is actually a global variable.

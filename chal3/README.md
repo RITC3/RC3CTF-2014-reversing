@@ -1,5 +1,5 @@
-Challenge 3
-===========
+Challenge 3 - 400 Points
+========================
 Simple buffer overflow to overwite values on the stack.
 
 Hints

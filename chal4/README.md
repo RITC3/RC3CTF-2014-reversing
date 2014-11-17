@@ -1,5 +1,5 @@
-Challenge 4
-===========
+Challenge 4 - 500 Points
+========================
 There are measures in place to prevent debugging. Break them and get the flag.
 
 Hints
@@ -10,4 +10,4 @@ Hints
 
 Solution
 --------
-Jump over anti_debug in main to get the flag.
+Jump over anti_debug in main and in the thread to get the flag.

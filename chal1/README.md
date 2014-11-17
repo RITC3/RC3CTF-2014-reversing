@@ -1,5 +1,5 @@
-Challenge 1
-===========
+Challenge 1 - 100 Points
+========================
 An old CS project.
 
 Hint
