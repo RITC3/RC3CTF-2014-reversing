@@ -2,6 +2,7 @@
 
 void sigint(){
     close(glsock);
+    exit(1);
 }
 
 bool ctfserver(void (*handler)(void *)) {
