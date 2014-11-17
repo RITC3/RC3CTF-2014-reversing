@@ -8,9 +8,6 @@ all: chal4
 chal4: clean
 	$(CC) $(CFLAGS) -o chal4 $(CSOURCE) $(CLIBFLAGS)
 
-static: clean
-	$(CC) $(CFLAGS) -o chal4 -static $(CSOURCE) $(CLIBFLAGS)
-
 debug: clean
 	$(CC) $(CFLAGS) -o chal4 -ggdb $(CSOURCE) $(CLIBFLAGS)
 
