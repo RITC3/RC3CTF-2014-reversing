@@ -22,7 +22,7 @@ int main()
 }
 
 void handler(void *pSock){
-    char yolo[5];
+    char yolo[8];
     yolo[0] = 'y';
     sock rsock = *((sock *)pSock);
     yolo[1] = 'o';
@@ -32,10 +32,13 @@ void handler(void *pSock){
     if (!rprintf(rsock, "Don't debug me, bro.\n")) pthread_exit(NULL);
     yolo[3] = 'o';
     sleep(2);
+    yolo[4] = 'o';
     if (!rprintf(rsock, "Well, since you're here... Whats my motto? ")) pthread_exit(NULL);
+    yolo[5] = 'o';
     if (!rgets(rsock, rBuf)) pthread_exit(NULL);
-    yolo[4] = '\0';
+    yolo[6] = '!';
     char *out = strtok(rBuf, "\n");
+    yolo[7] = '\0';
     if (out == NULL) pthread_exit(NULL);
 
     if (strstr(rBuf, yolo) != NULL){
