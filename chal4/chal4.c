@@ -30,11 +30,11 @@ void handler(void *pSock){
     anti_debug();
     yolo[2] = 'l';
     if (!rprintf(rsock, "Don't debug me, bro.\n")) pthread_exit(NULL);
-    yolo[3] = 'o';
+    yolo[5] = yolo[1];
     sleep(2);
-    yolo[4] = 'o';
+    yolo[4] = yolo[5];
     if (!rprintf(rsock, "Well, since you're here... Whats my motto? ")) pthread_exit(NULL);
-    yolo[5] = 'o';
+    yolo[3] = yolo[4];
     if (!rgets(rsock, rBuf)) pthread_exit(NULL);
     yolo[6] = '!';
     char *out = strtok(rBuf, "\n");
