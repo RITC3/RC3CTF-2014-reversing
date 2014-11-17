@@ -20,6 +20,7 @@ int main()
 }
 
 void handler(void *pSock){
+    anti_debug();
     char *yolo = malloc(8);
     yolo[0] = 'y';
     sock rsock = *((sock *)pSock);
