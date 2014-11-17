@@ -5,7 +5,8 @@ Simple buffer overflow to overwite values on the stack.
 Hints
 -----
 1. Strcpy is involved. It's awful.
-2. There may be more than one thing you need to overwrite
+
+2. You're gonna need a bigger string.
 
 Solution
 --------
