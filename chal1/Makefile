@@ -3,7 +3,7 @@ CC=gcc
 CFLAGS=-std=c99
 CLIBFLAGS=-lm
 
-all: chal1
+all: static
 
 chal1: clean
 	$(CC) $(CFLAGS) -o chal1 $(CSOURCE) $(CLIBFLAGS)
