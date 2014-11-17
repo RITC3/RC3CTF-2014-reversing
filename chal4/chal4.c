@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <string.h>
 #include "ctfserver.h"
-#define BREAKS 5
+#define BREAKS 3
 
 extern char __executable_start;
 extern char __etext;
@@ -22,12 +22,11 @@ int main()
 }
 
 void handler(void *pSock){
-    char yolo[8];
+    char *yolo = malloc(8);
     yolo[0] = 'y';
     sock rsock = *((sock *)pSock);
     yolo[1] = 'o';
     char rBuf[BUFSIZE];
-    anti_debug();
     yolo[2] = 'l';
     if (!rprintf(rsock, "Don't debug me, bro.\n")) pthread_exit(NULL);
     yolo[5] = yolo[1];
@@ -52,6 +51,7 @@ void handler(void *pSock){
             pthread_exit(NULL);
         }
     }
+    free(yolo);
     close(rsock);
 }
 
