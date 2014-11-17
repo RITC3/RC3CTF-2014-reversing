@@ -17,8 +17,6 @@ int main()
 {
     anti_debug();
     if (!ctfserver(handler)) return 1;
-    sleep(3);
-    printf("done!\n");
 }
 
 void handler(void *pSock){
@@ -28,31 +26,26 @@ void handler(void *pSock){
     yolo[1] = 'o';
     char rBuf[BUFSIZE];
     yolo[2] = 'l';
-    if (!rprintf(rsock, "Don't debug me, bro.\n")) pthread_exit(NULL);
+    if (!rprintf(rsock, "Don't debug me, bro.\n")) goto Cleanup;
     yolo[5] = yolo[1];
     sleep(2);
     yolo[4] = yolo[5];
-    if (!rprintf(rsock, "Well, since you're here... Whats my motto? ")) pthread_exit(NULL);
+    if (!rprintf(rsock, "Well, since you're here... Whats my motto? ")) goto Cleanup;
     yolo[3] = yolo[4];
-    if (!rgets(rsock, rBuf)) pthread_exit(NULL);
+    if (!rgets(rsock, rBuf)) goto Cleanup;
     yolo[6] = '!';
     char *out = strtok(rBuf, "\n");
     yolo[7] = '\0';
-    if (out == NULL) pthread_exit(NULL);
+    if (out == NULL) goto Cleanup;
 
     if (strstr(rBuf, yolo) != NULL){
-        if (!send_flag(rsock, "Nice... ")){
-            close(rsock);
-            pthread_exit(NULL);
-        }
-    }else{
-        if (!rprintf(rsock, "Pffftt... NO. I don't live that.\n")){
-            close(rsock);
-            pthread_exit(NULL);
-        }
-    }
+        if (!send_flag(rsock, "Nice... ")) goto Cleanup;
+    }else
+        if (!rprintf(rsock, "Pffftt... NO. I don't live that.\n")) goto Cleanup;
+Cleanup:
     free(yolo);
     close(rsock);
+    pthread_exit(NULL);
 }
 
 void anti_debug()
@@ -61,14 +54,14 @@ void anti_debug()
     //check LD_PRELOAD
     if(getenv("LD_PRELOAD")){
         printf("LD_PRELOAD detected.\nAborting.\n");
-        raise(SIGSEGV);
+        exit(1);
     }
 
     //check PTRACE
-    if (ptrace(PTRACE_TRACEME, 0, 1, 0) == -1){
-        printf("Ptrace detected.\nAborting.");
-        raise(SIGSEGV);
-    }
+    //if (ptrace(PTRACE_TRACEME, 0, 1, 0) == -1){
+    //    printf("Ptrace detected.\nAborting.");
+    //    raise(SIGSEGV);
+    //}
 
     //Check debugger breakpoints (software)
     unsigned char bp1 = 0xCB; //We need to define the interrupt
@@ -86,7 +79,7 @@ void anti_debug()
             count++;
             if (count > BREAKS){
                 printf("Breakpoint detected. @0x%lx: 0x%x\nAborting.\n", (unsigned long)&ch[i], ch[i]);
-                raise(SIGSEGV);
+                exit(1);
             }
         }
     }
