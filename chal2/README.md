@@ -1,4 +1,4 @@
-Challenge 2 - 200 Points
+Challenge 2 - 40 Points
 ========================
 Relies on the SIGFPE handler. Nearly identical to the stackoverflow challenge. Still fun though.
 
