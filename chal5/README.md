@@ -1,4 +1,4 @@
-Challenge 5 - 300 Points
+Challenge 5 - 60 Points
 ========================
 Harder than strings for sure. Misleading function that you can get called RC3_NOTA_FLAG by just disassembling.
 
