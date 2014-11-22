@@ -1,4 +1,4 @@
-Challenge 1 - 100 Points
+Challenge 1 - 20 Points
 ========================
 An old CS project.
 
