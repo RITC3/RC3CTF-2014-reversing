@@ -1,4 +1,4 @@
-Challenge 4 - 500 Points
+Challenge 4 - 100 Points
 ========================
 There are measures in place to prevent debugging. Break them and get the flag.
 
